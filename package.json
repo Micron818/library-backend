@@ -1,0 +1,20 @@
+{
+  "name": "library-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Micron818/library-backend.git",
+  "author": "micron",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "apollo-server": "^3.11.1",
+    "graphql": "^16.6.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
