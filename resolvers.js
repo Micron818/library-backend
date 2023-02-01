@@ -8,28 +8,32 @@ const User = require('./models/user')
 const { PubSub } = require('graphql-subscriptions')
 const pubsub = new PubSub()
 
+let books
+
 const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
+      //solution for simplify code
+      let query = {}
       if (args.author) {
         const author = await Author.findOne({ name: args.author })
-        return await Book.find({ author: author.id }).populate('author')
+        query.author = author.id
       }
-      if (args.genre)
-        return await Book.find({ genres: { $in: args.genre } }).populate(
-          'author'
-        )
-      return await Book.find({}).populate('author')
+      if (args.genre) {
+        query.genres = { $in: args.genre }
+      }
+      return Book.find(query).populate('author')
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => {
+      books = await Book.find({}) //solution for issue n+1
+      return Author.find({})
+    },
   },
   Author: {
-    bookCount: async ({ name }) => {
-      const author = await Author.findOne({ name: name })
-      const books = await Book.find({ author: author.id })
-      return books.length
+    bookCount: async (root) => {
+      return books.filter((b) => String(b.author) === String(root.id)).length
     },
   },
   Mutation: {
